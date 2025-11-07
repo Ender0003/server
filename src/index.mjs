@@ -1,18 +1,39 @@
 import express from 'express';
 const app = express();
+
+
 const PORT = process.env.PORT || 3000;
 
 const mockUsers = [
     {id: 1, username: 'Jane Doe', displayName: 'Jane'},
-    {id: 2, username: 'John Doe', displayName: 'John'}
+    {id: 2, username: 'John Doe', displayName: 'John'},
+    {id: 3, username: 'Alice', displayName: 'Alice Wonderland'},
+    {id: 4, username: 'Bob', displayName: 'Bobby'},
+    {id: 5, username: 'Charlie', displayName: 'Charlie Brown'},
+    {id: 6, username: 'Dave', displayName: 'David'},
+    {id: 7, username: 'Eve', displayName: 'Evelyn'},
 ];
+
+app.listen(PORT, () => {
+  console.log(`Server is running on Port${PORT}`);
+});
+
 app.get('/', (req, res) => {
   res.status(201).send({msg: 'Hello from ExpressJS'});
 });
 
 app.get('/api/users', (req, res) => {
-    res.send(mockUsers);
-});
+    console.log(req.query);
+    const {
+        query: {filter, value},
+    } = req;
+    if (filter && value) 
+        return res.send();
+          mockUsers.filter((u) => u[filter].includes(value)
+        );
+
+    return res.send(mockUsers);
+}); 
 
 app.get('/api/users/:id', (req, res) => {
     console.log(req.params);
@@ -24,13 +45,9 @@ app.get('/api/users/:id', (req, res) => {
     if (!user) 
         return res.status(404).send({msg: 'User not found'});
         return res.send(user);
-
 });
 
 app.get('/api/products', (req, res) => {
     res.send([{id: 1, name: 'Product 1', price: 100},
               {id: 2, name: 'Product 2', price: 150}]);
-});
-app.listen(PORT, () => {
-  console.log(`Server is running on Port${PORT}`);
 });
