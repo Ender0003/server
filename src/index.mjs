@@ -1,6 +1,8 @@
 import express from 'express';
+
 const app = express();
 
+app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
@@ -31,9 +33,15 @@ app.get('/api/users', (req, res) => {
         return res.send();
           mockUsers.filter((u) => u[filter].includes(value)
         );
-
     return res.send(mockUsers);
 }); 
+
+app.post('/api/users', (req, res) => {
+    const {body} = req;
+    const newUser = {id: mockUsers[mockUsers.length - 1].id + 1, ...body};
+    mockUsers.push(newUser);
+    return res.status(201).send(newUser);
+});
 
 app.get('/api/users/:id', (req, res) => {
     console.log(req.params);
@@ -51,3 +59,15 @@ app.get('/api/products', (req, res) => {
     res.send([{id: 1, name: 'Product 1', price: 100},
               {id: 2, name: 'Product 2', price: 150}]);
 });
+
+app.put('/api/users/:id', (req, res) => {
+    const {body, params: { id },
+} = req;
+
+    const parsedId = parseInt(id);
+    if (isNaN(parsedId)) return res.status(400);
+    const findUserIndex = mockUsers.findIndex((u) => u.id === parsedId);
+    if (findUserIndex === -1) return res.status(404);
+    mockUsers[findUserIndex] = {id: parsedId, ...body};
+    return res.sendStatus(200);
+});  
